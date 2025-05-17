@@ -60,11 +60,8 @@ products.forEach((product) => {
 });
 
 function updateCartQuantity() {
-  let totalQuantity = 0;
-
-  cart.forEach((item) => {
-    totalQuantity += item.quantity;
-  });
+  // let totalQuantity = 0;
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
   document.querySelector(".js-cart-quantity").innerHTML = totalQuantity;
 }

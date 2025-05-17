@@ -5,6 +5,10 @@ import { formatCurrency } from "./utils/money.js";
 const orderSummaryContainer = document.querySelector(".order-summary");
 orderSummaryContainer.innerHTML = "";
 
+const totalQuantityHeader = document.querySelector(
+  ".checkout-header-middle-section"
+);
+
 cart.forEach((cartItem) => {
   const productId = cartItem.productId;
 
@@ -101,5 +105,15 @@ document.querySelectorAll(".js-delet-link").forEach((link) => {
       `.cart-item-container-${productId}`
     );
     container.remove();
+    updateCartQuantityHeader();
   });
 });
+
+function updateCartQuantityHeader() {
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+  totalQuantityHeader.innerHTML = `Checkout (<a href="checkout.html">${totalQuantity} Item${
+    totalQuantity !== 1 ? "s" : ""
+  }</a>)`;
+}
+
+updateCartQuantityHeader();
