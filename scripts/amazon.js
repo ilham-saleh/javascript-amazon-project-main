@@ -1,12 +1,13 @@
 import { cart, addToCart } from "../data/cart.js";
 import { products } from "../data/products.js";
+import { formatCurrency } from "./utils/money.js";
 
 const productGrid = document.querySelector(".products-grid");
 productGrid.innerHTML = ""; // Clear any hardcoded HTML first
 
 products.forEach((product) => {
   const stars = Math.floor(product.rating.stars * 10); // 4.5 → 45, 4 → 40
-  const price = (product.priceCents / 100).toFixed(2);
+  const price = formatCurrency(product.priceCents);
 
   const productHTML = `
       <div class="product-container">
