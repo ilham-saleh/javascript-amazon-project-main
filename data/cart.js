@@ -49,3 +49,10 @@ export function totalCartQuantity() {
 
   return totalQuantity;
 }
+
+export function updateDeliveryOption(productId, deliveryOptionId) {
+  const matchingProduct = cart.find((item) => item.productId === productId);
+
+  matchingProduct.deliveryOptionId = deliveryOptionId;
+  saveToStorage();
+}
