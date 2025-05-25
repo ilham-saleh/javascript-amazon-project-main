@@ -2,13 +2,17 @@ import {
   cart,
   removeFromCart,
   saveToStorage,
-  totalCartQuantity,
   updateDeliveryOption,
+  totalCartQuantity,
 } from "../../data/cart.js";
-import { products } from "../../data/products.js";
-import { deliveryOptions } from "../../data/deliveryOptions.js";
+import { getProduct } from "../../data/products.js";
+import {
+  deliveryOptions,
+  getDeliveryOption,
+} from "../../data/deliveryOptions.js";
 import { formatCurrency } from "../utils/money.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
+import renderPaymentSummary from "./paymentSummary.js";
 
 const totalQuantityHeader = document.querySelector(
   ".checkout-header-middle-section"
@@ -18,23 +22,31 @@ export default function renderorderSummary() {
   const orderSummaryContainer = document.querySelector(".order-summary");
   orderSummaryContainer.innerHTML = "";
 
+  function deliveryDateDayJS(option) {
+    let today = dayjs();
+    let deliveryDate = today.add(option.deliveryDay, "day");
+
+    // Skip weekends: If delivery lands on Saturday or Sunday, shift to Monday
+    while (
+      deliveryDate.format("dddd") === "Saturday" ||
+      deliveryDate.format("dddd") === "Sunday"
+    ) {
+      deliveryDate = deliveryDate.add(1, "day");
+    }
+
+    const formattedDate = deliveryDate.format("dddd, MMMM, D");
+
+    return formattedDate;
+  }
+
   cart.forEach((cartItem) => {
     const productId = cartItem.productId;
 
-    let matchingProduct = products.find((product) => product.id === productId);
+    const matchingProduct = getProduct(productId);
 
-    if (!matchingProduct) return;
+    const deliveryOption = getDeliveryOption(cartItem.deliveryOptionId);
 
-    const deliveryOptionId = cartItem.deliveryOptionId;
-
-    const deliveryOption = deliveryOptions.find(
-      (option) => option.id === deliveryOptionId
-    );
-
-    const today = dayjs();
-    const deliveryDate = today
-      .add(deliveryOption.deliveryDay, "day")
-      .format("dddd, MMMM D");
+    const deliveryDate = deliveryDateDayJS(deliveryOption);
 
     let html = `
               <div class="cart-item-container cart-item-container-${
@@ -95,6 +107,7 @@ export default function renderorderSummary() {
       );
       container.remove();
       updateCartQuantityHeader();
+      renderPaymentSummary();
     });
   });
 
@@ -132,6 +145,7 @@ export default function renderorderSummary() {
         link.innerHTML = "Update";
 
         updateCartQuantityHeader();
+        renderPaymentSummary();
       } else {
         const currentQuantity = updateQuantitySpan.innerText;
         updateQuantitySpan.innerHTML = "";
@@ -151,10 +165,8 @@ export default function renderorderSummary() {
     let html = "";
 
     deliveryOptions.forEach((option) => {
-      const today = dayjs();
-      const deliveryDate = today
-        .add(option.deliveryDay, "day")
-        .format("dddd, MMMM D");
+      const deliveryDate = deliveryDateDayJS(option);
+
       const priceString =
         option.priceCents === 0
           ? "FREE"
@@ -185,11 +197,11 @@ export default function renderorderSummary() {
 
   document.querySelectorAll(".js-delivery-radio").forEach((input) => {
     input.addEventListener("change", () => {
-      const productId = input.dataset.productId;
-      const deliveryOptionId = input.dataset.deliveryOptionId;
+      const { productId, deliveryOptionId } = input.dataset;
       updateDeliveryOption(productId, deliveryOptionId);
 
       renderorderSummary();
+      renderPaymentSummary();
     });
   });
 }
