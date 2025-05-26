@@ -1,5 +1,5 @@
 import "../test/setup.js"; // Import the test setup file
-import { cart, addToCart, removeFromCart } from "../data/cart.js";
+import { cart, addToCart } from "../data/cart.js";
 
 describe("Test Suite: Cart", () => {
   beforeEach(() => {
