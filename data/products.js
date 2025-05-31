@@ -1,4 +1,12 @@
-class Product {
+export function getProduct(productId) {
+  const matchingProduct = products.find((product) => product.id === productId);
+
+  if (!matchingProduct) return;
+
+  return matchingProduct;
+}
+
+export class Product {
   id;
   image;
   name;
@@ -11,16 +19,52 @@ class Product {
     this.name = productDetails.name;
     this.rating = productDetails.rating;
     this.priceCents = productDetails.priceCents;
+    this.keywords = productDetails.keywords || [];
+    this.type = productDetails.type || "generic"; // Default type if not specified
+    this.sizeChartLink = productDetails.sizeChartLink || "";
+  }
+
+  getImageUrl() {
+    const stars = Math.floor(this.rating.stars * 10); // 4.5 → 45, 4 → 40
+    return `images/ratings/rating-${stars}`;
+  }
+
+  displaySizeChartLink() {
+    return "";
   }
 }
 
-export function getProduct(productId) {
-  const matchingProduct = products.find((product) => product.id === productId);
+// INHERITENCE
+export class Clothing extends Product {
+  sizeChartLink;
 
-  if (!matchingProduct) return;
+  constructor(productDetails) {
+    super(productDetails);
 
-  return matchingProduct;
+    this.sizeChartLink = productDetails.sizeChartLink;
+  }
+
+  displaySizeChartLink() {
+    return `<a href="${this.sizeChartLink}" target="_blank">View Size Chart</a>`;
+  }
 }
+
+// const clothingProduct = {
+//   id: "83d4ca15-0f35-48f5-b7a3-1ea210004f2e",
+//   image: "images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg",
+//   name: "Adults Plain Cotton T-Shirt - 2 Pack",
+//   rating: {
+//     stars: 4.5,
+//     count: 56,
+//   },
+//   priceCents: 799,
+//   keywords: ["tshirts", "apparel", "mens"],
+//   type: "clothing",
+//   sizeChartLink: "images/clothing-size-chart.png",
+// };
+// const clothing = new Clothing(clothingProduct);
+
+// console.log(clothing);
 
 export const products = [
   {
@@ -493,5 +537,9 @@ export const products = [
     priceCents: 2400,
     keywords: ["sweaters", "hoodies", "apparel", "mens"],
   },
-].map((product) => new Product(product));
-console.log(products);
+].map((product) => {
+  if (product.type === "clothing") {
+    return new Clothing(product);
+  }
+  return new Product(product);
+});
