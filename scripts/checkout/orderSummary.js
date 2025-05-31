@@ -1,10 +1,11 @@
-import {
-  cart,
-  removeFromCart,
-  saveToStorage,
-  updateDeliveryOption,
-  totalCartQuantity,
-} from "../../data/cart.js";
+// import {
+//   cart,
+//   removeFromCart,
+//   saveToStorage,
+//   updateDeliveryOption,
+//   totalCartQuantity,
+// } from "../../data/cart.js";
+import { cart } from "../../data/cart-class.js";
 import { getProduct } from "../../data/products.js";
 import {
   deliveryOptions,
@@ -39,7 +40,7 @@ export default function renderorderSummary() {
     return formattedDate;
   }
 
-  cart.forEach((cartItem) => {
+  cart.cartItems.forEach((cartItem) => {
     const productId = cartItem.productId;
 
     const matchingProduct = getProduct(productId);
@@ -112,7 +113,7 @@ export default function renderorderSummary() {
   });
 
   function updateCartQuantityHeader() {
-    const totalQuantity = totalCartQuantity();
+    const totalQuantity = cart.totalCartQuantity();
     totalQuantityHeader.innerHTML = `Checkout (<a href="checkout.html">${totalQuantity} Item${
       totalQuantity !== 1 ? "s" : ""
     }</a>)`;
@@ -135,11 +136,13 @@ export default function renderorderSummary() {
         const input = updateQuantitySpan.querySelector("input");
         const newQuantity = Number(input.value);
 
-        const matchingItem = cart.find((item) => item.productId === productId);
+        const matchingItem = cart.cartItems.find(
+          (item) => item.productId === productId
+        );
         if (matchingItem && newQuantity > 0) {
           matchingItem.quantity = newQuantity;
         }
-        saveToStorage();
+        cart.saveToStorage();
 
         updateQuantitySpan.innerHTML = newQuantity;
         link.innerHTML = "Update";
@@ -198,7 +201,7 @@ export default function renderorderSummary() {
   document.querySelectorAll(".js-delivery-radio").forEach((input) => {
     input.addEventListener("change", () => {
       const { productId, deliveryOptionId } = input.dataset;
-      updateDeliveryOption(productId, deliveryOptionId);
+      cart.updateDeliveryOption(productId, deliveryOptionId);
 
       renderorderSummary();
       renderPaymentSummary();

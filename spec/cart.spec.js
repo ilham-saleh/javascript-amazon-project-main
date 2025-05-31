@@ -1,9 +1,10 @@
 import "../test/setup.js"; // Import the test setup file
-import { cart, addToCart } from "../data/cart.js";
+import { cart } from "../data/cart-class.js";
 
 describe("Test Suite: Cart", () => {
   beforeEach(() => {
-    cart.length = 0; // Clear the cart before each test
+    cart.cartItems = []; // Clear the cart before each test
+    cart.saveToStorage();
   });
 
   it("should add a new item to the cart", () => {
@@ -14,11 +15,11 @@ describe("Test Suite: Cart", () => {
         deliveryOptionId: "1",
       },
     ];
-    addToCart("product-1");
-    expect(cart).toEqual(expected);
-    expect(cart.length).toBe(1);
-    expect(cart[0].productId).toBe("product-1");
-    expect(cart[0].quantity).toBe(1);
+    cart.addToCart("product-1");
+    expect(cart.cartItems).toEqual(expected);
+    expect(cart.cartItems.length).toBe(1);
+    expect(cart.cartItems[0].productId).toBe("product-1");
+    expect(cart.cartItems[0].quantity).toBe(1);
   });
 
   it("should increase the quantity of an existing item in the cart", () => {
@@ -29,11 +30,11 @@ describe("Test Suite: Cart", () => {
         deliveryOptionId: "1",
       },
     ];
-    addToCart("product-1");
-    addToCart("product-1");
-    expect(cart).toEqual(expected);
-    expect(cart.length).toBe(1);
-    expect(cart[0].productId).toBe("product-1");
-    expect(cart[0].quantity).toBe(2);
+    cart.addToCart("product-1");
+    cart.addToCart("product-1");
+    expect(cart.cartItems).toEqual(expected);
+    expect(cart.cartItems.length).toBe(1);
+    expect(cart.cartItems[0].productId).toBe("product-1");
+    expect(cart.cartItems[0].quantity).toBe(2);
   });
 });

@@ -1,3 +1,19 @@
+class Product {
+  id;
+  image;
+  name;
+  rating;
+  priceCents;
+
+  constructor(productDetails) {
+    this.id = productDetails.id;
+    this.image = productDetails.image;
+    this.name = productDetails.name;
+    this.rating = productDetails.rating;
+    this.priceCents = productDetails.priceCents;
+  }
+}
+
 export function getProduct(productId) {
   const matchingProduct = products.find((product) => product.id === productId);
 
@@ -477,4 +493,5 @@ export const products = [
     priceCents: 2400,
     keywords: ["sweaters", "hoodies", "apparel", "mens"],
   },
-];
+].map((product) => new Product(product));
+console.log(products);
